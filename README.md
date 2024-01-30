@@ -1,4 +1,4 @@
-## BreadcrumbsEncryption-Program
+## Encryption-Program
 
 For encryption and decryption textfile ,video ,image ,audio
 but ui so bad haha sry about that
