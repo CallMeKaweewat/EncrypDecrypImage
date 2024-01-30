@@ -4,7 +4,7 @@ from tkinter import filedialog
 import tempfile
 import shutil
 
-def encrypt_file(file_path, key):
+def encrypt_decrypt_file(file_path, key, operation):
     try:
         with open(file_path, 'rb') as fin:
             content = bytearray(fin.read())
@@ -20,7 +20,7 @@ def encrypt_file(file_path, key):
         # Move the temporary file to the original file
         shutil.move(temp_file_path, file_path)
 
-        result_label.config(text=f'Encryption Done for {file_path}.')
+        result_label.config(text=f'{operation} Done for {file_path}.')
 
     except FileNotFoundError:
         result_label.config(text=f'Error: File not found - {file_path}')
@@ -28,10 +28,6 @@ def encrypt_file(file_path, key):
         result_label.config(text='Error: Invalid key. Please enter a valid integer key.')
     except Exception as e:
         result_label.config(text=f'Error caught: {type(e).__name__} - {e}')
-
-def decrypt_file(file_path, key):
-    # Implement decryption logic here
-    # Similar to the encrypt_file function but with the inverse operation
 
 def browse_file():
     file_path = filedialog.askopenfilename()
@@ -45,18 +41,24 @@ def browse_directory():
     directory_entry.insert(0, directory_path)
     operation_var.set("All Files")
 
-def clear_result_label():
-    result_label.config(text="")
-
 def process_encryption_decryption():
     selected_operation = operation_var.get()
     key = int(key_entry.get())
-    file_path = file_entry.get()
 
-    if selected_operation == "Encrypt":
-        encrypt_file(file_path, key)
-    elif selected_operation == "Decrypt":
-        decrypt_file(file_path, key)
+    if selected_operation == "Single File":
+        file_path = file_entry.get()
+        encrypt_decrypt_file(file_path, key, 'Encryption/Decryption')
+    elif selected_operation == "All Files":
+        directory = directory_entry.get()
+
+        if not os.path.isdir(directory):
+            result_label.config(text=f'Error: {directory} is not a valid directory.')
+            return
+
+        for filename in os.listdir(directory):
+            file_path = os.path.join(directory, filename)
+            if os.path.isfile(file_path):
+                encrypt_decrypt_file(file_path, key, 'Encryption/Decryption')
 
 # GUI setup
 root = tk.Tk()
@@ -64,16 +66,16 @@ root.title("File Encryption and Decryption")
 
 # Operation Selection
 operation_var = tk.StringVar()
-operation_var.set("Encrypt")
+operation_var.set("Single File")
 
 operation_label = tk.Label(root, text="Select Operation:")
 operation_label.pack()
 
-encrypt_radio = tk.Radiobutton(root, text="Encrypt", variable=operation_var, value="Encrypt")
-encrypt_radio.pack()
+single_file_radio = tk.Radiobutton(root, text="Single File", variable=operation_var, value="Single File")
+single_file_radio.pack()
 
-decrypt_radio = tk.Radiobutton(root, text="Decrypt", variable=operation_var, value="Decrypt")
-decrypt_radio.pack()
+all_files_radio = tk.Radiobutton(root, text="All Files", variable=operation_var, value="All Files")
+all_files_radio.pack()
 
 # File/Directory Path Entry
 file_label = tk.Label(root, text="File/Directory Path:")
@@ -82,7 +84,7 @@ file_label.pack()
 file_entry = tk.Entry(root, width=50)
 file_entry.pack()
 
-browse_button = tk.Button(root, text="Browse", command=lambda: browse_file())
+browse_button = tk.Button(root, text="Browse", command=lambda: browse_file() if operation_var.get() == "Single File" else browse_directory())
 browse_button.pack()
 
 # Directory Entry
@@ -100,12 +102,8 @@ key_entry = tk.Entry(root)
 key_entry.pack()
 
 # Button for Encryption/Decryption
-process_button = tk.Button(root, text="Process", command=process_encryption_decryption)
+process_button = tk.Button(root, text="Encrypt/Decrypt", command=process_encryption_decryption)
 process_button.pack()
-
-# Clear Data Button
-clear_button = tk.Button(root, text="Clear Data", command=clear_result_label)
-clear_button.pack()
 
 # Result Label
 result_label = tk.Label(root, text="")
