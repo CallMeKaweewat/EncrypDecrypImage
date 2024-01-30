@@ -1,45 +1,25 @@
-## Alias 
-Create or display Terminal aliases
-  
-**Signature:**
+## BreadcrumbsEncryption-Program
+
+For encryption and decryption textfile ,video ,image ,audio
+but ui so bad haha sry about that
+
+## Req
 
   
-```typescript
-
-alias [-g] [name="value"]
-
-```
-
-  
-
-## Parameters
-
-  
-- `alias`: Command to set or display aliases.
-- `[-g]`: Set to global.
-- `name`: The name of the alias you want to create or display.
-- `["value"]`: The value to assign to the alias. 
+- Python: 
+- Visual studio code : or some thing if u want
+- Tkinker : 'pip install Tkinker'
+- tempfile : 'pip install tempfile'
 
 
 
-**Example:**
 
-  
-```typescript
 
-alias -g name="n00dles"
+**Feedback:**
 
-```
+If u have idea or bug u can contract me youkung@gmail.com
 
-  
 
-**Result:**
-
-```Terminal
-
-Set global alias name="n00dles"
-
-```
 
 
   
