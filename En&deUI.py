@@ -3,9 +3,6 @@ import tkinter as tk
 from tkinter import filedialog
 import tempfile
 import shutil
-import logging
-
-logging.basicConfig(filename='app.log', level=logging.DEBUG)
 
 def encrypt_decrypt_image(file_path, key, operation):
     try:
@@ -26,39 +23,42 @@ def encrypt_decrypt_image(file_path, key, operation):
         result_label.config(text=f'{operation} Done for {file_path}.')
 
     except FileNotFoundError:
-        logging.error(f'File not found: {file_path}')
         result_label.config(text=f'Error: File not found - {file_path}')
     except ValueError:
-        logging.error('Invalid key value')
         result_label.config(text='Error: Invalid key. Please enter a valid integer key.')
     except Exception as e:
-        logging.exception(f'Error caught: {type(e).__name__} - {e}')
         result_label.config(text=f'Error caught: {type(e).__name__} - {e}')
 
-def browse_file_or_directory():
-    path = filedialog.askopenfilename() if operation_var.get() == "Single Image" else filedialog.askdirectory()
+def browse_file():
+    file_path = filedialog.askopenfilename()
     file_entry.delete(0, tk.END)
-    file_entry.insert(0, path)
-    operation_var.set("Single Image" if os.path.isfile(path) else "All Images")
+    file_entry.insert(0, file_path)
+    operation_var.set("Single Image")
+
+def browse_directory():
+    directory_path = filedialog.askdirectory()
+    directory_entry.delete(0, tk.END)
+    directory_entry.insert(0, directory_path)
+    operation_var.set("All Images")
 
 def process_encryption_decryption():
     selected_operation = operation_var.get()
     key = int(key_entry.get())
-    file_path = file_entry.get()
 
-    try:
-        if selected_operation == "Single Image" and os.path.isfile(file_path):
-            encrypt_decrypt_image(file_path, key, 'Encryption/Decryption')
-        elif selected_operation == "All Images" and os.path.isdir(file_path):
-            for filename in os.listdir(file_path):
-                image_path = os.path.join(file_path, filename)
-                if os.path.isfile(image_path):
-                    encrypt_decrypt_image(image_path, key, 'Encryption/Decryption')
-        else:
-            logging.error('Invalid file or directory path')
-            result_label.config(text='Error: Invalid file or directory path.')
-    except Exception as e:
-        logging.exception(f'Unexpected error: {type(e).__name__} - {e}')
+    if selected_operation == "Single Image":
+        file_path = file_entry.get()
+        encrypt_decrypt_image(file_path, key, 'Encryption/Decryption')
+    elif selected_operation == "All Images":
+        directory = directory_entry.get()
+
+        if not os.path.isdir(directory):
+            result_label.config(text=f'Error: {directory} is not a valid directory.')
+            return
+
+        for filename in os.listdir(directory):
+            file_path = os.path.join(directory, filename)
+            if os.path.isfile(file_path):
+                encrypt_decrypt_image(file_path, key, 'Encryption/Decryption')
 
 # GUI setup
 root = tk.Tk()
@@ -84,8 +84,15 @@ file_label.pack()
 file_entry = tk.Entry(root, width=50)
 file_entry.pack()
 
-browse_button = tk.Button(root, text="Browse", command=browse_file_or_directory)
+browse_button = tk.Button(root, text="Browse", command=lambda: browse_file() if operation_var.get() == "Single Image" else browse_directory())
 browse_button.pack()
+
+# Directory Entry
+directory_label = tk.Label(root, text="Directory Path (for All Images):")
+directory_label.pack()
+
+directory_entry = tk.Entry(root, width=50)
+directory_entry.pack()
 
 # Encryption Key Entry
 key_label = tk.Label(root, text="Encryption/Decryption Key:")
