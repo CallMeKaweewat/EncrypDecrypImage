@@ -1,9 +1,12 @@
+# https://github.com/CallMeKaweewat
+# https://www.linkedin.com/in/kaweewat-kansupattanakul-93b3712a4/
 import os
 import tkinter as tk
 from tkinter import filedialog
 import tempfile
 import shutil
 
+# search file and directory
 def encrypt_decrypt_file(file_path, key, operation):
     try:
         with open(file_path, 'rb') as fin:
@@ -21,7 +24,7 @@ def encrypt_decrypt_file(file_path, key, operation):
         shutil.move(temp_file_path, file_path)
 
         result_label.config(text=f'{operation} Done for {file_path}.')
-
+    # call err
     except FileNotFoundError:
         result_label.config(text=f'Error: File not found - {file_path}')
     except ValueError:
