@@ -17,7 +17,7 @@ but ui so bad haha sry about that
 
 **Feedback:**
 
-If u have idea or bug u can contract me youkung@gmail.com
+If u have idea or bug u can contract me ypukung@gmail.com
 
 date update
 30/1/2024 
